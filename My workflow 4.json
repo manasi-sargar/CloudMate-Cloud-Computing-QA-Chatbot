@@ -1,0 +1,149 @@
+{
+  "name": "My workflow 4",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "fdf896a4-88fa-4aea-b6d3-d01ffc194c81",
+      "name": "When chat message received",
+      "webhookId": "eba3c77b-3b84-4aa8-9fc9-22eaab1627fe"
+    },
+    {
+      "parameters": {
+        "jsCode": "\n\nconst question = $input.first().json.chatInput || \"\";\n\nreturn [\n  {\n    json: {\n      question: question.trim(),\n      message: question.trim()\n        ? \"Your question is: \" + question.trim()\n        : \"Please enter a question.\"\n    }\n  }\n];\n\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "9f68f186-6f82-45dc-8b51-b5ce32c61bb7",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1wq7AvEr699tMgV3GM3Ue5Bhj5B4UyCp3",
+          "mode": "list",
+          "cachedResultName": "Cloud_Computing_200_QA_Dataset.csv",
+          "cachedResultUrl": "https://drive.google.com/file/d/1wq7AvEr699tMgV3GM3Ue5Bhj5B4UyCp3/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "6893898c-51ee-4357-88b5-fdc9fbf6bd60",
+      "name": "Download file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "TSohmE8NoGxpUML4",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "7fcc56fe-b121-4936-961a-fe7fd8b29bf8",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst rows = $input.all().map(item => item.json);\n\nconst question = $(\"Code in JavaScript\").first().json.question || \"\";\n\nconst q = question.toLowerCase().trim();\n\nconst match = rows.find(row =>\n  (row.question || \"\").toLowerCase().trim() === q\n);\n\nreturn [{\n  json: {\n    question,\n    answer: match\n      ? match.answer\n      : \"Sorry, I could not find an exact match in the dataset.\"\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "a0259bf5-d9eb-4de8-afe8-53c5f9d48f50",
+      "name": "Code in JavaScript1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Download file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "d7f74689-432e-4e3e-9024-7d3b8883930d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2eb2b6a11f620f4f5dcf178de6b4bf525c392b40b5d8fe34f4141f745a2158cb"
+  },
+  "nodeGroups": [],
+  "id": "PZsY9ZrnCm6WuoUh",
+  "tags": []
+}
